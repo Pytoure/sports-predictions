@@ -1,0 +1,180 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <math.h>
+
+int main()
+{
+    int league, NMGD_DOM, NMGEX_DOM, NMGD_EX, NMGEX_EX, NVM;
+    int DOMG_5, EXG_5, MN12, DOMN, EXN, DOMP_5, EXP_5, PST_DOM, PST_EX;
+    int NMJD_DOM, NMJDG_DOM, NMJDP_DOM, NMJEX_EX, NMJEXG_EX, NMJEXP_EX;
+    int E1[5], E2[5], i;
+    bool MI_TEMPS;
+    char DOM[30], EX[30];
+
+    // Scores pondérés
+    int scoreDOM = 0, scoreEX = 0;
+
+    printf(" +=+ CHAMPIONNATS +=+ \n");
+    printf("1. Premier League \n");
+    printf("2. Liga \n");
+    printf("3. Bundesliga \n");
+    printf("4. Serie A \n");
+    printf("5. Ligue 1 \n");
+
+    printf("Faites votre choix : ");
+    scanf("%d", &league);
+
+    switch (league) {
+    case 1:
+        printf("Premier League, bon choix !\n");
+        printf("Veuillez entrer l'équipe à domicile : ");
+        scanf("%s", DOM);
+        printf("Veuillez entrer l'équipe extérieure : ");
+        scanf("%s", EX);
+
+        printf("=== SCORES ===\n");
+        for (i = 0; i < 5; i++) {
+            printf("Match %d - %s : ", i + 1, DOM);
+            scanf("%d", &E1[i]);
+            printf("Match %d - %s : ", i + 1, EX);
+            scanf("%d", &E2[i]);
+        }
+
+        printf("=== SUR LES CINQ DERNIÈRES CONFRONTATIONS ===\n");
+
+        printf("Victoires de  %s : ", DOM);
+        scanf("%d", &NMGD_DOM);
+
+        printf("victoires de %s l'exterieur :", DOM);
+        scanf("%d", &NMGEX_DOM);
+
+        printf("Combien de matchs %s a gagnés à domicile ? ", EX);
+        scanf("%d", &NMGD_EX);
+
+        printf("Combien de matchs %s a gagnés à l'extérieur ? ", EX);
+        scanf("%d", &NMGEX_EX);
+
+        printf("Combien de matchs nuls y a-t-il eu ? ");
+        scanf("%d", &MN12);
+
+        printf("Entrez le nombre de matchs joués à domicile par %s : ", DOM);
+        scanf("%d", &NMJD_DOM);
+
+        printf("Entrez le nombre de victoires à domicile de %s : ", DOM);
+        scanf("%d", &NMJDG_DOM);
+
+        printf("Entrez le nombre de matchs perdus à domicile par %s : ", DOM);
+        scanf("%d", &NMJDP_DOM);
+
+        printf("Entrez le nombre de matchs joués à l'extérieur par %s : ", EX);
+        scanf("%d", &NMJEX_EX);
+
+        printf("Entrez le nombre de victoires à l'extérieur de %s : ", EX);
+        scanf("%d", &NMJEXG_EX);
+
+        printf("Entrez le nombre de matchs perdus à l'extérieur par %s : ", EX);
+        scanf("%d", &NMJEXP_EX);
+
+        printf("=== FIN POUR LES CINQ DERNIÈRES CONFRONTATIONS ===\n");
+
+        printf("=== PASSONS AUX 5 DERNIERS MATCHS RÉCENTS ===\n");
+
+        printf("Sur les 5 derniers matchs, combien %s en a gagné ? ", DOM);
+        scanf("%d", &DOMG_5);
+
+        printf("Combien %s en a perdu ? ", DOM);
+        scanf("%d", &DOMP_5);
+
+        printf("Combien de nuls pour %s ? ", DOM);
+        scanf("%d", &DOMN);
+
+        printf("Sur les 5 derniers matchs, combien %s en a gagné ? ", EX);
+        scanf("%d", &EXG_5);
+
+        printf("Combien %s en a perdu ? ", EX);
+        scanf("%d", &EXP_5);
+
+        printf("Combien de nuls pour %s ? ", EX);
+        scanf("%d", &EXN);
+
+        printf("Quelle est la position actuelle de %s : ", DOM);
+        scanf("%d", &PST_DOM);
+
+        printf("Quelle est la position actuelle de %s : ", EX);
+        scanf("%d", &PST_EX);
+
+        printf("La première mi-temps est-elle terminée (oui=1, non=0) ? ");
+        scanf("%d", &NVM);
+
+        if (NVM == 1) {
+            MI_TEMPS = true;
+        }
+        else if (NVM == 0) {
+            MI_TEMPS = false;
+        }
+        else {
+            printf("ERREUR !!!\n");
+            return 1;
+        }
+
+        // ================== CALCUL PONDÉRÉ ==================
+
+        // Forme récente (max 30 pts)
+        scoreDOM += DOMG_5 * 6 + DOMN * 2;
+        scoreEX += EXG_5 * 6 + EXN * 2;
+
+        // Confrontations directes (max 20 pts)
+        scoreDOM += (NMGD_DOM + NMGEX_DOM) * 4 + MN12 * 2;
+        scoreEX += (NMGD_EX + NMGEX_EX) * 4 + MN12 * 2;
+
+        // Classement (max 20 pts)
+        scoreDOM += (20 - PST_DOM); // 1er = 19 pts
+        scoreEX += (20 - PST_EX);
+
+        // Force domicile / extérieur (max 20 pts)
+        scoreDOM += NMJDG_DOM * 2;
+        scoreEX += NMJEXG_EX * 2;
+
+        // Bonus mi-temps (max 10 pts)
+        if (MI_TEMPS) {
+            int butDOM, butEX;
+            printf("Score mi-temps : %s : ", DOM);
+            scanf("%d", &butDOM);
+            printf("Score mi-temps : %s : ", EX);
+            scanf("%d", &butEX);
+
+            if (butDOM > butEX) scoreDOM += 10;
+            else if (butDOM == butEX) { scoreDOM += 5; scoreEX += 5; }
+            else scoreEX += 10;
+        }
+
+        // ================== DÉCISION ==================
+        printf("\n=== SCORE FINAL ===\n");
+        printf("%s : %d points\n", DOM, scoreDOM);
+        printf("%s : %d points\n", EX, scoreEX);
+
+        if (scoreDOM > scoreEX + 10)
+            printf("💡 Position : Victoire probable de %s\n", DOM);
+        else if (scoreEX > scoreDOM + 10)
+            printf("💡 Position : Victoire probable de %s\n", EX);
+        else
+            printf("💡 Position : Match nul probable ou incertain\n");
+
+        break;
+
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        printf("Veuillez entrer l'équipe à domicile : ");
+        scanf(" %[^\n]", DOM);
+        printf("Veuillez entrer l'équipe extérieure : ");
+        scanf(" %[^\n]", EX);
+        break;
+
+    default:
+        printf("Erreur : league non reconnue.\n");
+    }
+
+    return 0;
+}
